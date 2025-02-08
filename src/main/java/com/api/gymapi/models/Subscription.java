@@ -16,7 +16,7 @@ public class Subscription {
     private Customer customer;
 
     @ManyToOne
-    @JoinColumn(name = "pack_id", nullable = false)
+    @JoinColumn(name = "packId", nullable = false)
     private Pack pack;
 
     private LocalDate startDate;

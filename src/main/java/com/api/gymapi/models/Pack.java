@@ -9,9 +9,9 @@ import lombok.Data;
 public class Pack {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long offerId;
-    private String offerName;
-    private String offerDescription;
+    private long PackId;
+    private String PackName;
+    private String PackDescription;
     private int durationMonths;
     private double monthlyPrice;
 }

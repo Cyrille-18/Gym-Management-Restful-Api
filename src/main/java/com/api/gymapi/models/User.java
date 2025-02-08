@@ -29,5 +29,10 @@ public abstract class User {
     @Column(nullable=false)
     private  boolean firstlogin = true;
 
+    public boolean isFirstLogin() {
+        return firstlogin;
+    }
+
+
 }
 
