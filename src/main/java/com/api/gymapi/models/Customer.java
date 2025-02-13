@@ -3,7 +3,7 @@ package com.api.gymapi.models;
 import jakarta.persistence.*;
 import lombok.Data;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -11,7 +11,7 @@ import java.util.List;
 @Table(name = "customers")
 @Data
 public class Customer extends User {
-    private LocalDateTime registrationDate;
+    private LocalDate registrationDate;
     private boolean activeSubscription;
     private String  phoneNumber;
 

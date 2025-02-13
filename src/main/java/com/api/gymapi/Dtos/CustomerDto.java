@@ -2,7 +2,7 @@ package com.api.gymapi.Dtos;
 
 import lombok.Data;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 
 @Data
 public class CustomerDto {
@@ -10,6 +10,6 @@ public class CustomerDto {
     private String lastName;
     private String username;
     private String password;
-    private LocalDateTime registrationDate;
+    private LocalDate registrationDate;
     private String  phoneNumber;
 }
