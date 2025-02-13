@@ -10,7 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.Optional;
 
 @Service
@@ -29,7 +29,7 @@ public class UserService implements IUserService {
         customer.setLastName(customerDto.getLastName());
         customer.setUsername(customerDto.getUsername());
         customer.setPassword(passwordEncoder.encode(customerDto.getPassword()));
-        customer.setRegistrationDate(LocalDateTime.now());
+        customer.setRegistrationDate(LocalDate.now());
         customer.setPhoneNumber(customerDto.getPhoneNumber());
         customer.setActiveSubscription(false);
         // Client n'a pas de rôle
@@ -67,7 +67,18 @@ public class UserService implements IUserService {
         user.setPassword(passwordEncoder.encode(newPassword));
         userRepository.save(user);
     }
+
+    @Override
     public Optional<User> findByUsername(String username) {
         return userRepository.findByUsername(username);
+    }
+
+    @Override
+    public void deleteUser(long id){
+        if (userRepository.existsById(id)) {
+            userRepository.deleteById(id);
+        } else {
+            throw new RuntimeException("Utilisateur avec l'ID " + id + " introuvable.");
+        }
     }
 }
