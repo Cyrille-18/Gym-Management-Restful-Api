@@ -1,6 +1,7 @@
 package com.api.gymapi.service;
 
 import com.api.gymapi.Dtos.CustomerDto;
+import com.api.gymapi.Dtos.CustomerResponseDto;
 import com.api.gymapi.Dtos.EmployeeDto;
 import com.api.gymapi.models.Employee;
 import com.api.gymapi.models.User;
@@ -9,6 +10,7 @@ import com.api.gymapi.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import java.security.SecureRandom;
 
 import java.time.LocalDate;
 import java.util.Optional;
@@ -22,18 +24,33 @@ public class UserService implements IUserService {
     private final BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
     @Override
-    public User registerUserForCustomer(CustomerDto customerDto) {
-        // Création d'un utilisateur de type Client
+    public CustomerResponseDto registerUserForCustomer(CustomerDto customerDto) {
+        // Générer un nom d'utilisateur unique
+        String generatedUsername = generateUniqueUsername(customerDto.getFirstName(), customerDto.getLastName());
+
+        // Générer un mot de passe aléatoire
+        String plainPassword = generateRandomPassword(10);
+        String hashedPassword = passwordEncoder.encode(plainPassword);
+
+        // Créer le Customer
         Customer customer = new Customer();
         customer.setFirstName(customerDto.getFirstName());
         customer.setLastName(customerDto.getLastName());
-        customer.setUsername(customerDto.getUsername());
-        customer.setPassword(passwordEncoder.encode(customerDto.getPassword()));
+        customer.setUsername(generatedUsername);
+        customer.setPassword(hashedPassword);
         customer.setRegistrationDate(LocalDate.now());
         customer.setPhoneNumber(customerDto.getPhoneNumber());
         customer.setActiveSubscription(false);
-        // Client n'a pas de rôle
-        return userRepository.save(customer);
+
+        // Sauvegarder en base
+        userRepository.save(customer);
+
+        // Retourner les infos pour le front
+        CustomerResponseDto responseDto = new CustomerResponseDto();
+        responseDto.setUsername(generatedUsername);
+        responseDto.setPassword(plainPassword); // Mot de passe en clair pour affichage
+
+        return responseDto;
     }
 
     @Override
@@ -81,4 +98,21 @@ public class UserService implements IUserService {
             throw new RuntimeException("Utilisateur avec l'ID " + id + " introuvable.");
         }
     }
+    private String generateRandomPassword(int length) {
+        String chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*";
+        SecureRandom random = new SecureRandom();
+        StringBuilder password = new StringBuilder();
+
+        for (int i = 0; i < length; i++) {
+            password.append(chars.charAt(random.nextInt(chars.length())));
+        }
+
+        return password.toString();
+    }
+    private String generateUniqueUsername(String firstName, String lastName) {
+        String baseUsername = firstName.toLowerCase() + "_" + lastName.toLowerCase();
+        int randomNumber = new SecureRandom().nextInt(900) + 100; // Nombre entre 100 et 999
+        return baseUsername + randomNumber;
+    }
+
 }
