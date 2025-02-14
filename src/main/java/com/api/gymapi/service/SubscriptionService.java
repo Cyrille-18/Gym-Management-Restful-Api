@@ -4,9 +4,11 @@ import com.api.gymapi.Dtos.SubscriptionRequestDto;
 import com.api.gymapi.models.Customer;
 import com.api.gymapi.models.Pack;
 import com.api.gymapi.models.Subscription;
+import com.api.gymapi.models.User;
 import com.api.gymapi.repository.CustomerRepository;
 import com.api.gymapi.repository.PackRepository;
 import com.api.gymapi.repository.SubscriptionRepository;
+import com.api.gymapi.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
@@ -20,11 +22,12 @@ public class SubscriptionService implements ISubscriptionService {
     private final SubscriptionRepository subscriptionRepository;
     private final CustomerRepository customerRepository;
     private final PackRepository packRepository;
-
-    public SubscriptionService(SubscriptionRepository subscriptionRepository, CustomerRepository customerRepository, PackRepository packRepository) {
+    private final UserRepository userRepository;
+    public SubscriptionService(SubscriptionRepository subscriptionRepository, CustomerRepository customerRepository, PackRepository packRepository,UserRepository userRepository) {
         this.subscriptionRepository = subscriptionRepository;
         this.customerRepository = customerRepository;
         this.packRepository = packRepository;
+        this.userRepository = userRepository;
     }
 
     @Override
@@ -112,4 +115,33 @@ public class SubscriptionService implements ISubscriptionService {
                 .filter(subscription -> subscription.getCustomer().getUserId() == customerId)
                 .toList();
     }
+
+    @Override
+    public Optional<Subscription> getCurrentSubscriptionForUser(User user) {
+        // Récupère toutes les souscriptions de l'utilisateur
+        List<Subscription> subscriptions = subscriptionRepository.findByCustomer(user);
+
+        // Si l'utilisateur n'a aucune souscription
+        if (subscriptions.isEmpty()) {
+            return Optional.empty(); // Aucun abonnement trouvé
+        }
+
+        // Parcours les souscriptions de l'utilisateur
+        for (Subscription subscription : subscriptions) {
+            // Récupère la date de début et la durée du pack
+            LocalDate startDate = subscription.getStartDate();
+            int durationMonths = subscription.getPack().getDurationMonths(); // Durée du pack
+
+            // Calcule la date de fin de la souscription
+            LocalDate endDate = startDate.plusMonths(durationMonths);
+
+            // Si la date actuelle est avant la date de fin, la souscription est encore active
+            if (LocalDate.now().isBefore(endDate)) {
+                return Optional.of(subscription); // Retourne la souscription active
+            }
+        }
+
+        return Optional.empty(); // Aucune souscription active trouvée
+    }
+
 }
