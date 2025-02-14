@@ -1,4 +1,7 @@
 package com.api.gymapi.repository;
 
-public interface SubscriptionRepository {
+import com.api.gymapi.models.Subscription;
+import org.springframework.data.jpa.repository.JpaRepository;
+
+public interface SubscriptionRepository extends JpaRepository<Subscription, Long>  {
 }
