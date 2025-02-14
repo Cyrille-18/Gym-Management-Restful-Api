@@ -67,6 +67,7 @@ public class UserManagementController {
      * Endpoint pour récupérer la liste des employés
      */
     @GetMapping("/employees")
+    @PreAuthorize("isAuthenticated()")
     public ResponseEntity<List<Employee>> getAllEmployees() {
         List<Employee> employees = employeeRepository.findAll();
         return ResponseEntity.ok(employees);

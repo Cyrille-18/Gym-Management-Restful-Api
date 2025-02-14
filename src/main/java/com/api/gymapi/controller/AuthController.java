@@ -1,9 +1,6 @@
 package com.api.gymapi.controller;
 
-import com.api.gymapi.Dtos.CustomerDto;
-import com.api.gymapi.Dtos.EmployeeDto;
-import com.api.gymapi.Dtos.LoginRequest;
-import com.api.gymapi.Dtos.LoginResponse;
+import com.api.gymapi.Dtos.*;
 import com.api.gymapi.enums.Role;
 import com.api.gymapi.models.Employee;
 import com.api.gymapi.models.User;
@@ -33,7 +30,7 @@ public class AuthController {
      */
 
     @PostMapping("/register/customer")
-    public User registerCustomer(@RequestBody CustomerDto customerDto) {
+    public CustomerResponseDto registerCustomer(@RequestBody CustomerDto customerDto) {
         return userService.registerUserForCustomer(customerDto);
     }
 
